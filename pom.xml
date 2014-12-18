@@ -29,7 +29,7 @@
   <name>Google Login Plugin for Hudson</name>
   <version>1.0-SNAPSHOT</version>
   <description>
-    This plugin integrates Google OAuth2 for user authentication.
+    This plugin integrates Google into user authentication.
   </description>
   <url><!-- Not determined yet. --></url>
   <issueManagement>
