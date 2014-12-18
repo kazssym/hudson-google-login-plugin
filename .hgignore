@@ -1,0 +1,12 @@
+# .hgignore
+
+# Maven output files:
+^target/
+
+# NetBeans local configuration files:
+^nb-
+
+# Backup and garbage files:
+~$
+\.orig$
+\.rej$
