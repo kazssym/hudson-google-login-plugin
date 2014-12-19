@@ -18,18 +18,24 @@
 
 package org.vx68k.hudson.plugin.google.login;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 import hudson.Extension;
 import hudson.model.User;
-import hudson.model.UserProperty;
 import hudson.model.UserPropertyDescriptor;
 import hudson.security.FederatedLoginServiceUserProperty;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.oauth2.Oauth2Scopes;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * User property for Google logins.
+ * User property for Google accounts.
  *
  * @author Kaz Nishimura
  * @since 1.0
@@ -38,8 +44,8 @@ public class GoogleLoginServiceProperty
         extends FederatedLoginServiceUserProperty {
 
     @DataBoundConstructor
-    public GoogleLoginServiceProperty() {
-        super(new HashSet<String>());
+    public GoogleLoginServiceProperty(Collection<String> identifiers) {
+        super(identifiers);
     }
 
     @Extension
@@ -68,9 +74,17 @@ public class GoogleLoginServiceProperty
             this.clientSecret = clientSecret;
         }
 
+        public GoogleAuthorizationCodeFlow getAuthorizationCodeFlow() {
+            return new GoogleAuthorizationCodeFlow(new NetHttpTransport(),
+                    JacksonFactory.getDefaultInstance(), getClientID(),
+                    getClientSecret(), Collections.singleton(
+                            Oauth2Scopes.USERINFO_EMAIL));
+        }
+
         @Override
-        public UserProperty newInstance(User user) {
-            return new GoogleLoginServiceProperty();
+        public GoogleLoginServiceProperty newInstance(User user) {
+            Set<String> identifiers = new TreeSet<String>();
+            return new GoogleLoginServiceProperty(identifiers);
         }
 
         @Override
