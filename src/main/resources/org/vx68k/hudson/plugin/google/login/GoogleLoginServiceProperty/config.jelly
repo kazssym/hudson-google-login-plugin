@@ -9,4 +9,21 @@
 -->
 <?jelly escape-by-default="true"?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+  <j:choose>
+    <j:when test="${!empty(instance.identifiers)}">
+      <f:entry title="${%Google accounts}">
+        <f:repeatable var="email" items="${instance.identifiers}" noAddButton="true">
+          <f:readOnlyTextbox value="${email}"/>
+        </f:repeatable>
+      </f:entry>
+      <f:block>
+        <a href="${rootURL}/federationLoginService/google/login">Link With Another Google Account</a>
+      </f:block>
+    </j:when>
+    <j:otherwise>
+      <f:block>
+        <a href="${rootURL}/federationLoginService/google/login">Link With Google Account</a>
+      </f:block>
+    </j:otherwise>
+  </j:choose>
 </j:jelly>
