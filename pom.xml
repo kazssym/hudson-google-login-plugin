@@ -29,10 +29,14 @@
   <name>Google Login Plugin for Hudson</name>
   <version>1.0-SNAPSHOT</version>
   <description>
-    This plugin integrates Google into user authentication.
+    This plugin adds a federated login option and allows users to login with
+    their Google accounts.
+    It should work but should also be considered as a preview for now.
   </description>
-  <url><!-- Not determined yet. --></url>
+  <url>http://kazssym.bitbucket.org/hudson-google-login-plugin/</url>
   <issueManagement>
+    <system>Bitbucket</system>
+    <url>https://bitbucket.org/kazssym/hudson-google-login-plugin/issues</url>
   </issueManagement>
   <developers>
     <developer>

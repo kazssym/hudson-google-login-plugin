@@ -7,5 +7,7 @@
   this notice are preserved.  This file is offered as-is, without any warranty.
 -->
 <div>
-  This plugin integrates Google into user authentication.
+  This plugin adds a federated login option and allows users to login with
+  their Google accounts.
+  It should work but should also be considered as a preview for now.
 </div>
