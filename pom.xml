@@ -134,7 +134,7 @@
     <dependency>
       <groupId>org.vx68k.hudson.plugin</groupId>
       <artifactId>google-api-client-plugin</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.apis</groupId>
