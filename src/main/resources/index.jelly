@@ -8,6 +8,6 @@
 -->
 <div>
   This plugin adds a federated login option and allows users to login with
-  their Google accounts.
-  It should work but should also be considered as a preview for now.
+  their Google accounts.  It should work as expected but also should be
+  considered as a preview for now.
 </div>
