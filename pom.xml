@@ -52,6 +52,10 @@
     </license>
   </licenses>
   <scm>
+    <connection>scm:hg:https://bitbucket.org/kazssym/hudson-google-login-plugin</connection>
+    <developerConnection>scm:hg:https://bitbucket.org/kazssym/hudson-google-login-plugin</developerConnection>
+    <tag>default</tag>
+    <url>https://bitbucket.org/kazssym/hudson-google-login-plugin/src</url>
   </scm>
   <build>
     <plugins>
