@@ -8,7 +8,7 @@
   this notice are preserved.  This file is offered as-is, without any warranty.
 -->
 <?jelly escape-by-default="true"?>
-<j:jelly xmlns="http://www.w3.org/1999/xhtml" xmlns:j="jelly:core" xmlns:f="/lib/form"
+<j:jelly xmlns="http://www.w3.org/1999/xhtml" xmlns:j="jelly:core">
   <a href="${rootURL}/federatedLoginService/google/login" class="google-login">
     <span>Sign in with Google</span>
   </a>
