@@ -35,6 +35,7 @@ import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
 
 /**
+ * Federated login service for Google.
  *
  * @author Kaz Nishimura
  * @since 1.0
