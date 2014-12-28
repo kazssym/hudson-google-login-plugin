@@ -145,7 +145,7 @@ public class GoogleLoginService extends FederatedLoginService {
         return GoogleLoginServiceProperty.class;
     }
 
-    protected static class Identity extends FederatedIdentity {
+    protected class Identity extends FederatedIdentity {
 
         private final String identifier;
         private final String nickname;
