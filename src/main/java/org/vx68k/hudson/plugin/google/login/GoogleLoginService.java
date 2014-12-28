@@ -20,6 +20,8 @@ package org.vx68k.hudson.plugin.google.login;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import hudson.Extension;
 import hudson.model.Hudson;
 import hudson.model.User;
@@ -49,7 +51,13 @@ public class GoogleLoginService extends FederatedLoginService {
         return rootUrl + "federatedLoginService/" + URL_NAME + "/authorized";
     }
 
-    public HttpResponse doLogin() {
+    /**
+     * Handles a federated login request.
+     *
+     * @param request HTTP servlet request
+     * @return HTTP response for the request
+     */
+    public HttpResponse doLogin(HttpServletRequest request) {
         Hudson application = Hudson.getInstance();
         GoogleLoginServiceProperty.Descriptor descriptor =
                 application.getDescriptorByType(
@@ -60,11 +68,27 @@ public class GoogleLoginService extends FederatedLoginService {
         GoogleAuthorizationCodeRequestUrl url =
                 flow.newAuthorizationUrl();
         url.setRedirectUri(getRedirectUri(application.getRootUrl()));
+        url.setState(request.getSession().getId());
         return HttpResponses.redirectTo(url.build());
     }
 
-    public HttpResponse doAuthorized(
-            @QueryParameter(required = true) String code) {
+    /**
+     * Handles an authorized redirection request.
+     *
+     * @param request HTTP servlet request
+     * @param code authorization code
+     * @param state state in the authorization request
+     * @return HTTP response for the request
+     */
+    public HttpResponse doAuthorized(HttpServletRequest request,
+            @QueryParameter(required = true) String code,
+            @QueryParameter String state) {
+        if (state != null) {
+            if (!state.equals(request.getSession().getId())) {
+                return HttpResponses.forbidden();
+            }
+        }
+
         Hudson application = Hudson.getInstance();
         GoogleLoginServiceProperty.Descriptor descriptor =
                 application.getDescriptorByType(
@@ -85,20 +109,22 @@ public class GoogleLoginService extends FederatedLoginService {
                 GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier(
                         flow.getTransport(), flow.getJsonFactory());
                 if (!verifier.verify(token)) {
-                    return HttpResponses.error(500, "ID token is not valid");
+                    return HttpResponses.forbidden();
                 }
             } catch (GeneralSecurityException e) {
-                return HttpResponses.error(500, e);
+                return HttpResponses.error(
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
             }
 
             tokenPayload = token.getPayload();
         } catch (IOException e) {
-            return HttpResponses.error(500, e);
+            return HttpResponses.error(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
 
         String email = tokenPayload.getEmail();
         if (email == null) {
-            return HttpResponses.error(403, "Email is unknown");
+            return HttpResponses.forbidden();
         }
 
         Identity identity = new Identity(email);
@@ -106,7 +132,8 @@ public class GoogleLoginService extends FederatedLoginService {
             try {
                 identity.addToCurrentUser();
             } catch (IOException e) {
-                return HttpResponses.error(500, e);
+                return HttpResponses.error(
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
             }
         } else {
             identity.signin();
