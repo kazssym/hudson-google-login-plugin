@@ -8,32 +8,34 @@
   this notice are preserved.  This file is offered as-is, without any warranty.
 -->
 <?jelly escape-by-default="true"?>
-<j:jelly xmlns="http://www.w3.org/1999/xhtml" xmlns:j="jelly:core" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
   <f:entry title="${%Google accounts}">
     <f:repeatable var="email" items="${instance.identifiers}" noAddButton="true">
       <f:readOnlyTextbox value="${email}"/>
     </f:repeatable>
-    <a href="${rootURL}/federatedLoginService/google/login" class="google-login">
-      <span>Sign in</span>
-    </a>
-    <style type="text/css">
-      /* <![CDATA[ */
-      .google-login {
-        display: inline-block;
-        width: 89px;
-        height: 30px;
-        background-image: url("${resURL}/plugin/google-login-plugin/link_20dp.png");
-      }
-      .google-login:active {
-        background-image: url("${resURL}/plugin/google-login-plugin/link_active_20dp.png");
-      }
-      .google-login:hover {
-        background-image: url("${resURL}/plugin/google-login-plugin/link_hover_20dp.png");
-      }
-      .google-login > * {
-        display: none;
-      }
-      /* ]]> */
-    </style>
+    <div>
+      <a href="${rootURL}/federatedLoginService/google/login" class="google-login">
+        <span>Sign in</span>
+      </a>
+      <style type="text/css">
+        /* <![CDATA[ */
+        .google-login {
+          display: inline-block;
+          width: 89px;
+          height: 30px;
+          background-image: url("${resURL}/plugin/google-login-plugin/link_20dp.png");
+        }
+        .google-login:active {
+          background-image: url("${resURL}/plugin/google-login-plugin/link_active_20dp.png");
+        }
+        .google-login:hover {
+          background-image: url("${resURL}/plugin/google-login-plugin/link_hover_20dp.png");
+        }
+        .google-login > * {
+          display: none;
+        }
+        /* ]]> */
+      </style>
+    </div>
   </f:entry>
 </j:jelly>
