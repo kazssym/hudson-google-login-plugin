@@ -26,12 +26,11 @@
   <groupId>org.vx68k.hudson.plugin</groupId>
   <artifactId>google-login-plugin</artifactId>
   <packaging>hpi</packaging>
-  <name>Google Login Plugin (Beta) for Hudson</name>
-  <version>1.0</version>
+  <name>Google Login Plugin for Hudson</name>
+  <version>2.0-SNAPSHOT</version>
   <description>
     This plugin adds a federated login option and allows users to login with
-    their Google accounts.  It should work as expected but also should be
-    considered as a preview for now.
+    their Google accounts.
   </description>
   <url>http://kazssym.bitbucket.org/hudson-google-login-plugin/</url>
   <issueManagement>
@@ -54,7 +53,7 @@
   <scm>
     <connection>scm:hg:https://bitbucket.org/kazssym/hudson-google-login-plugin</connection>
     <developerConnection>scm:hg:https://bitbucket.org/kazssym/hudson-google-login-plugin</developerConnection>
-    <tag>release/1.0</tag>
+    <tag>default</tag>
     <url>https://bitbucket.org/kazssym/hudson-google-login-plugin/src</url>
   </scm>
   <build>

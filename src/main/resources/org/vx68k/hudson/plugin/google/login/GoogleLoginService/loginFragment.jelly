@@ -7,7 +7,27 @@
   permitted in any medium without royalty provided the copyright notice and
   this notice are preserved.  This file is offered as-is, without any warranty.
 -->
-<?jelly escape-by-default="true"?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  <a href="${rootURL}/federatedLoginService/google/login">Login with Google</a>
-</j:jelly>
+<div>
+  <a href="${rootURL}/federatedLoginService/google/login" class="google-login">
+    <span>Sign in with Google</span>
+  </a>
+  <style type="text/css">
+    /* <![CDATA[ */
+    .google-login {
+      display: inline-block;
+      width: 147px;
+      height: 30px;
+      background-image: url("${resURL}/plugin/google-login-plugin/login_20dp.png");
+    }
+    .google-login:active {
+      background-image: url("${resURL}/plugin/google-login-plugin/login_active_20dp.png");
+    }
+    .google-login:hover {
+      background-image: url("${resURL}/plugin/google-login-plugin/login_hover_20dp.png");
+    }
+    .google-login > * {
+      display: none;
+    }
+    /* ]]> */
+  </style>
+</div>

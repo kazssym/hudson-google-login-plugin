@@ -6,6 +6,10 @@
 # NetBeans local configuration files:
 ^nb-
 
+# Windows system files:
+(^|/)desktop\.ini$
+(^|/)Thumbs\.db$
+
 # Backup and garbage files:
 ~$
 \.orig$

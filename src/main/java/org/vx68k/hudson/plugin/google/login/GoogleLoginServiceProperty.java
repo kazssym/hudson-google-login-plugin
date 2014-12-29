@@ -75,10 +75,11 @@ public class GoogleLoginServiceProperty
         }
 
         public GoogleAuthorizationCodeFlow getAuthorizationCodeFlow() {
+            Collection<String> scopes = Collections.singleton(
+                    Oauth2Scopes.USERINFO_EMAIL);
             return new GoogleAuthorizationCodeFlow(new NetHttpTransport(),
                     JacksonFactory.getDefaultInstance(), getClientID(),
-                    getClientSecret(), Collections.singleton(
-                            Oauth2Scopes.USERINFO_EMAIL));
+                    getClientSecret(), scopes);
         }
 
         @Override

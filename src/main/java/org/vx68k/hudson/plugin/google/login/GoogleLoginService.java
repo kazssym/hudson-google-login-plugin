@@ -19,7 +19,8 @@
 package org.vx68k.hudson.plugin.google.login;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import hudson.Extension;
 import hudson.model.Hudson;
 import hudson.model.User;
@@ -27,14 +28,15 @@ import hudson.security.FederatedLoginService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.services.oauth2.Oauth2;
+import com.google.api.services.oauth2.model.Userinfoplus;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
 
 /**
+ * Federated login service for Google.
  *
  * @author Kaz Nishimura
  * @since 1.0
@@ -48,7 +50,13 @@ public class GoogleLoginService extends FederatedLoginService {
         return rootUrl + "federatedLoginService/" + URL_NAME + "/authorized";
     }
 
-    public HttpResponse doLogin() {
+    /**
+     * Handles a federated login request.
+     *
+     * @param request HTTP servlet request
+     * @return HTTP response for the request
+     */
+    public HttpResponse doLogin(HttpServletRequest request) {
         Hudson application = Hudson.getInstance();
         GoogleLoginServiceProperty.Descriptor descriptor =
                 application.getDescriptorByType(
@@ -59,11 +67,27 @@ public class GoogleLoginService extends FederatedLoginService {
         GoogleAuthorizationCodeRequestUrl url =
                 flow.newAuthorizationUrl();
         url.setRedirectUri(getRedirectUri(application.getRootUrl()));
+        url.setState(request.getSession().getId());
         return HttpResponses.redirectTo(url.build());
     }
 
-    public HttpResponse doAuthorized(
-            @QueryParameter(required = true) String code) {
+    /**
+     * Handles an authorized redirection request.
+     *
+     * @param request HTTP servlet request
+     * @param code authorization code
+     * @param state state in the authorization request
+     * @return HTTP response for the request
+     */
+    public HttpResponse doAuthorized(HttpServletRequest request,
+            @QueryParameter(required = true) String code,
+            @QueryParameter String state) {
+        if (state != null) {
+            if (!state.equals(request.getSession().getId())) {
+                return HttpResponses.forbidden();
+            }
+        }
+
         Hudson application = Hudson.getInstance();
         GoogleLoginServiceProperty.Descriptor descriptor =
                 application.getDescriptorByType(
@@ -75,37 +99,34 @@ public class GoogleLoginService extends FederatedLoginService {
                 flow.newTokenRequest(code);
         tokenRequest.setRedirectUri(getRedirectUri(application.getRootUrl()));
 
-        GoogleIdToken.Payload tokenPayload;
+        Userinfoplus userinfoplus;
         try {
             GoogleTokenResponse tokenResponse = tokenRequest.execute();
+            String accessToken = tokenResponse.getAccessToken();
 
-            GoogleIdToken token = tokenResponse.parseIdToken();
-            try {
-                GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier(
-                        flow.getTransport(), flow.getJsonFactory());
-                if (!verifier.verify(token)) {
-                    return HttpResponses.error(500, "ID token is not valid");
-                }
-            } catch (GeneralSecurityException e) {
-                return HttpResponses.error(500, e);
-            }
+            Oauth2 oauth2 = new Oauth2(flow.getTransport(), flow.getJsonFactory(),
+                    flow.getRequestInitializer());
+            Oauth2.Userinfo userinfo = oauth2.userinfo();
 
-            tokenPayload = token.getPayload();
+            Oauth2.Userinfo.Get userinfoGet = userinfo.get();
+            userinfoGet.setOauthToken(accessToken);
+            userinfoplus = userinfoGet.execute();
         } catch (IOException e) {
-            return HttpResponses.error(500, e);
+            return HttpResponses.error(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
 
-        String email = tokenPayload.getEmail();
-        if (email == null) {
-            return HttpResponses.error(403, "Email is unknown");
+        if (!userinfoplus.isVerifiedEmail()) {
+            return HttpResponses.forbidden();
         }
 
-        Identity identity = new Identity(email);
+        Identity identity = new Identity(userinfoplus);
         if (User.current() != null) {
             try {
                 identity.addToCurrentUser();
             } catch (IOException e) {
-                return HttpResponses.error(500, e);
+                return HttpResponses.error(
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
             }
         } else {
             identity.signin();
@@ -126,34 +147,36 @@ public class GoogleLoginService extends FederatedLoginService {
 
     protected class Identity extends FederatedIdentity {
 
-        private final String email;
+        private final String identifier;
+        private final String nickname;
+        private final String fullName;
+        private final String emailAddress;
 
-        public Identity(String email) {
-            this.email = email;
-        }
-
-        public String getEmail() {
-            return email;
+        public Identity(Userinfoplus userinfoplus) {
+            this.identifier = userinfoplus.getEmail();
+            this.nickname = userinfoplus.getEmail();
+            this.fullName = userinfoplus.getName();
+            this.emailAddress = userinfoplus.getEmail();
         }
 
         @Override
         public String getIdentifier() {
-            return getEmail();
+            return identifier;
         }
 
         @Override
         public String getNickname() {
-            return getEmail();
+            return nickname;
         }
 
         @Override
         public String getFullName() {
-            return "(Not included)";
+            return fullName;
         }
 
         @Override
         public String getEmailAddress() {
-            return getEmail();
+            return emailAddress;
         }
 
         @Override

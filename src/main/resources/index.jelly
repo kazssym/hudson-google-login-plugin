@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   index.jelly for Google Login Plugin
   Copyright (C) 2014 Kaz Nishimura
@@ -8,6 +9,5 @@
 -->
 <div>
   This plugin adds a federated login option and allows users to login with
-  their Google accounts.  It should work as expected but also should be
-  considered as a preview for now.
+  their Google accounts.
 </div>
