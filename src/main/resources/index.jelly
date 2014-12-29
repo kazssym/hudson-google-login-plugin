@@ -7,7 +7,7 @@
   permitted in any medium without royalty provided the copyright notice and
   this notice are preserved.  This file is offered as-is, without any warranty.
 -->
-<div xmlns="http://www.w3.org/1999/xhtml">
+<div>
   This plugin adds a federated login option and allows users to login with
   their Google accounts.
 </div>
