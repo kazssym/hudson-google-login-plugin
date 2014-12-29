@@ -30,8 +30,7 @@
   <version>2.0-SNAPSHOT</version>
   <description>
     This plugin adds a federated login option and allows users to login with
-    their Google accounts.  It should work as expected but also should be
-    considered as a preview for now.
+    their Google accounts.
   </description>
   <url>http://kazssym.bitbucket.org/hudson-google-login-plugin/</url>
   <issueManagement>
