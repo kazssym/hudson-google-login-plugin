@@ -7,8 +7,13 @@
   permitted in any medium without royalty provided the copyright notice and
   this notice are preserved.  This file is offered as-is, without any warranty.
 -->
-<div>
-  <a href="${rootURL}/federatedLoginService/google/login" class="google-login">
+<?jelly escape-by-default="true"?>
+<j:jelly xmlns:j="jelly:core">
+  <j:set var="from" value="${request.getParameter('from')}"/>
+  <j:if test="${from == null}">
+    <j:set var="from" value="${request.requestURI}"/>
+  </j:if>
+  <a href="${rootURL}/federatedLoginService/google/login?from=${from}" class="google-login">
     <span>Sign in with Google</span>
   </a>
   <style type="text/css">
@@ -30,4 +35,4 @@
     }
     /* ]]> */
   </style>
-</div>
+</j:jelly>

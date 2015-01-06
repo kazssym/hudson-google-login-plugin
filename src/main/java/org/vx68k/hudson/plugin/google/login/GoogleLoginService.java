@@ -54,20 +54,29 @@ public class GoogleLoginService extends FederatedLoginService {
      * Handles a federated login request.
      *
      * @param request HTTP servlet request
+     * @param from URL path where the login request made
      * @return HTTP response for the request
      */
-    public HttpResponse doLogin(HttpServletRequest request) {
+    public HttpResponse doLogin(HttpServletRequest request,
+            @QueryParameter String from) {
         Hudson application = Hudson.getInstance();
         GoogleLoginServiceProperty.Descriptor descriptor =
                 application.getDescriptorByType(
                         GoogleLoginServiceProperty.Descriptor.class);
+
+        String state = request.getSession().getId();
+        if (from != null) {
+            if (!from.equals(request.getContextPath() + "/login")) {
+                state += ";from=" + from;
+            }
+        }
 
         GoogleAuthorizationCodeFlow flow =
                 descriptor.getAuthorizationCodeFlow();
         GoogleAuthorizationCodeRequestUrl url =
                 flow.newAuthorizationUrl();
         url.setRedirectUri(getRedirectUri(application.getRootUrl()));
-        url.setState(request.getSession().getId());
+        url.setState(state);
         return HttpResponses.redirectTo(url.build());
     }
 
@@ -82,7 +91,15 @@ public class GoogleLoginService extends FederatedLoginService {
     public HttpResponse doAuthorized(HttpServletRequest request,
             @QueryParameter(required = true) String code,
             @QueryParameter String state) {
+        String from = request.getContextPath() + "/";
         if (state != null) {
+            String[] sub = state.split("\\s*;\\s*");
+            if (sub.length > 1) {
+                state = sub[0];
+                if (sub[1].startsWith("from=")) {
+                    from = sub[1].substring(sub[1].indexOf('=') + 1);
+                }
+            }
             if (!state.equals(request.getSession().getId())) {
                 return HttpResponses.forbidden();
             }
@@ -132,7 +149,7 @@ public class GoogleLoginService extends FederatedLoginService {
             identity.signin();
         }
 
-        return HttpResponses.redirectToContextRoot();
+        return HttpResponses.redirectTo(from);
     }
 
     @Override
