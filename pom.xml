@@ -139,9 +139,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.vx68k.hudson.plugin</groupId>
+      <groupId>org.hudsonci.plugins</groupId>
       <artifactId>google-api-client-plugin</artifactId>
-      <version>1.0</version>
+      <version>1.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.apis</groupId>
