@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   config.jelly for GoogleLoginServiceUserProperty
-  Copyright (C) 2014 Kaz Nishimura
+  Copyright (C) 2014-2015 Kaz Nishimura
 
   Copying and distribution of this file, with or without modification, are
   permitted in any medium without royalty provided the copyright notice and
@@ -10,8 +10,8 @@
 <?jelly escape-by-default="true"?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
   <f:entry title="${%Google accounts}">
-    <f:repeatable var="email" items="${instance.identifiers}" noAddButton="true">
-      <f:readOnlyTextbox value="${email}"/>
+    <f:repeatable field="identifiers" noAddButton="true">
+      <f:readOnlyTextbox value="${instance}"/>
     </f:repeatable>
     <div>
       <j:set var="from" value="${request.requestURI}"/>
