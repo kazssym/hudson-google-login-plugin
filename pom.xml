@@ -23,7 +23,7 @@
     <version>3.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.vx68k.hudson.plugin</groupId>
+  <groupId>org.hudsonci.plugins</groupId>
   <artifactId>google-login-plugin</artifactId>
   <packaging>hpi</packaging>
   <name>Google Login Plugin for Hudson</name>
@@ -139,9 +139,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.vx68k.hudson.plugin</groupId>
+      <groupId>org.hudsonci.plugins</groupId>
       <artifactId>google-api-client-plugin</artifactId>
-      <version>1.0</version>
+      <version>1.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.apis</groupId>
