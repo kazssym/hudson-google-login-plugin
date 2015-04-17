@@ -155,6 +155,11 @@
   </profiles>
   <dependencies>
     <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+    <dependency>
       <groupId>org.hudsonci.plugins</groupId>
       <artifactId>google-api-client-plugin</artifactId>
       <version>1.0.1</version>

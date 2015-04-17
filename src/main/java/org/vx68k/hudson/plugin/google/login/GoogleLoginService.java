@@ -19,6 +19,7 @@
 package org.vx68k.hudson.plugin.google.login;
 
 import java.io.IOException;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -48,8 +49,31 @@ public class GoogleLoginService extends FederatedLoginService {
     private static final String URL_NAME = "google";
     private static final String LOGIN_FROM_NAME = "googleLoginFrom";
 
-    protected static String getRedirectUri(String rootUrl) {
-        return rootUrl + "federatedLoginService/" + URL_NAME + "/authorized";
+    private Hudson hudson = null;
+
+    /**
+     * Returns the Hudson instance.
+     * @return Hudson instance
+     */
+    public Hudson getHudson() {
+        if (hudson == null) {
+            return Hudson.getInstance();
+        }
+        return hudson;
+    }
+
+    /**
+     * Sets the Hudson instance.
+     * @param hudson Hudson instance
+     */
+    @Inject
+    public void setHudson(Hudson hudson) {
+        this.hudson = hudson;
+    }
+
+    protected String getRedirectUri() {
+        return getHudson().getRootUrl() + "federatedLoginService/" + URL_NAME
+                + "/authorized";
     }
 
     /**
@@ -61,9 +85,8 @@ public class GoogleLoginService extends FederatedLoginService {
      */
     public HttpResponse doLogin(HttpServletRequest request,
             @QueryParameter String from) {
-        Hudson application = Hudson.getInstance();
-        GoogleLoginServiceProperty.Descriptor descriptor =
-                application.getDescriptorByType(
+        GoogleLoginServiceProperty.Descriptor descriptor = getHudson()
+                .getDescriptorByType(
                         GoogleLoginServiceProperty.Descriptor.class);
 
         HttpSession session = request.getSession();
@@ -78,7 +101,7 @@ public class GoogleLoginService extends FederatedLoginService {
                 descriptor.getAuthorizationCodeFlow();
         GoogleAuthorizationCodeRequestUrl url =
                 flow.newAuthorizationUrl();
-        url.setRedirectUri(getRedirectUri(application.getRootUrl()));
+        url.setRedirectUri(getRedirectUri());
         url.setState(session.getId());
         return HttpResponses.redirectTo(url.build());
     }
@@ -116,7 +139,7 @@ public class GoogleLoginService extends FederatedLoginService {
                 descriptor.getAuthorizationCodeFlow();
         GoogleAuthorizationCodeTokenRequest tokenRequest =
                 flow.newTokenRequest(code);
-        tokenRequest.setRedirectUri(getRedirectUri(application.getRootUrl()));
+        tokenRequest.setRedirectUri(getRedirectUri());
 
         Userinfoplus userinfoplus;
         try {
