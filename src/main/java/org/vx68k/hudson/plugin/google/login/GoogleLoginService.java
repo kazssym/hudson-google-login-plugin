@@ -19,8 +19,10 @@
 package org.vx68k.hudson.plugin.google.login;
 
 import java.io.IOException;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import hudson.Extension;
 import hudson.model.Hudson;
 import hudson.model.User;
@@ -45,29 +47,62 @@ import org.kohsuke.stapler.QueryParameter;
 public class GoogleLoginService extends FederatedLoginService {
 
     private static final String URL_NAME = "google";
+    private static final String LOGIN_FROM_NAME = "googleLoginFrom";
 
-    protected static String getRedirectUri(String rootUrl) {
-        return rootUrl + "federatedLoginService/" + URL_NAME + "/authorized";
+    private Hudson hudson = null;
+
+    /**
+     * Returns the Hudson instance.
+     * @return Hudson instance
+     */
+    public Hudson getHudson() {
+        if (hudson == null) {
+            return Hudson.getInstance();
+        }
+        return hudson;
+    }
+
+    /**
+     * Sets the Hudson instance.
+     * @param hudson Hudson instance
+     */
+    @Inject
+    public void setHudson(Hudson hudson) {
+        this.hudson = hudson;
+    }
+
+    protected String getRedirectUri() {
+        return getHudson().getRootUrl() + "federatedLoginService/" + URL_NAME
+                + "/authorized";
     }
 
     /**
      * Handles a federated login request.
      *
      * @param request HTTP servlet request
+     * @param from URL path where the login request made
      * @return HTTP response for the request
      */
-    public HttpResponse doLogin(HttpServletRequest request) {
-        Hudson application = Hudson.getInstance();
-        GoogleLoginServiceProperty.Descriptor descriptor =
-                application.getDescriptorByType(
+    public HttpResponse doLogin(HttpServletRequest request,
+            @QueryParameter String from) {
+        GoogleLoginServiceProperty.Descriptor descriptor = getHudson()
+                .getDescriptorByType(
                         GoogleLoginServiceProperty.Descriptor.class);
+
+        HttpSession session = request.getSession();
+        session.removeAttribute(LOGIN_FROM_NAME);
+        if (from != null) {
+            if (!from.equals(request.getContextPath() + "/login")) {
+                session.setAttribute(LOGIN_FROM_NAME, from);
+            }
+        }
 
         GoogleAuthorizationCodeFlow flow =
                 descriptor.getAuthorizationCodeFlow();
         GoogleAuthorizationCodeRequestUrl url =
                 flow.newAuthorizationUrl();
-        url.setRedirectUri(getRedirectUri(application.getRootUrl()));
-        url.setState(request.getSession().getId());
+        url.setRedirectUri(getRedirectUri());
+        url.setState(session.getId());
         return HttpResponses.redirectTo(url.build());
     }
 
@@ -82,10 +117,17 @@ public class GoogleLoginService extends FederatedLoginService {
     public HttpResponse doAuthorized(HttpServletRequest request,
             @QueryParameter(required = true) String code,
             @QueryParameter String state) {
+        HttpSession session = request.getSession();
         if (state != null) {
-            if (!state.equals(request.getSession().getId())) {
+            if (!state.equals(session.getId())) {
                 return HttpResponses.forbidden();
             }
+        }
+
+        String from = (String) session.getAttribute(LOGIN_FROM_NAME);
+        session.removeAttribute(LOGIN_FROM_NAME);
+        if (from == null) {
+            from = request.getContextPath() + "/";
         }
 
         Hudson application = Hudson.getInstance();
@@ -97,7 +139,7 @@ public class GoogleLoginService extends FederatedLoginService {
                 descriptor.getAuthorizationCodeFlow();
         GoogleAuthorizationCodeTokenRequest tokenRequest =
                 flow.newTokenRequest(code);
-        tokenRequest.setRedirectUri(getRedirectUri(application.getRootUrl()));
+        tokenRequest.setRedirectUri(getRedirectUri());
 
         Userinfoplus userinfoplus;
         try {
@@ -132,7 +174,7 @@ public class GoogleLoginService extends FederatedLoginService {
             identity.signin();
         }
 
-        return HttpResponses.redirectToContextRoot();
+        return HttpResponses.redirectTo(from);
     }
 
     @Override

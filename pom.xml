@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   pom.xml for Tools Labels Plugin for Hudson
-  Copyright (C) 2014 Kaz Nishimura
+  Copyright (C) 2014-2015 Kaz Nishimura
 
   This program is free software: you can redistribute it and/or modify it
   under the terms of the GNU Affero General Public License as published by the
@@ -27,11 +27,8 @@
   <artifactId>google-login-plugin</artifactId>
   <packaging>hpi</packaging>
   <name>Google Login Plugin for Hudson</name>
-  <version>2.1</version>
-  <description>
-    This plugin adds a federated login option and allows users to login with
-    their Google accounts.
-  </description>
+  <version>3.0-SNAPSHOT</version>
+  <description>This plugin implements federated login with Google accounts.</description>
   <url>http://kazssym.bitbucket.org/hudson-google-login-plugin/</url>
   <issueManagement>
     <system>Bitbucket</system>
@@ -46,14 +43,14 @@
   </developers>
   <licenses>
     <license>
-      <name>GNU Affero General Public License version 3</name>
+      <name>GNU Affero General Public License version 3 or later</name>
       <url>http://www.gnu.org/licenses/agpl.html</url>
     </license>
   </licenses>
   <scm>
     <connection>scm:hg:https://bitbucket.org/kazssym/hudson-google-login-plugin</connection>
     <developerConnection>scm:hg:https://bitbucket.org/kazssym/hudson-google-login-plugin</developerConnection>
-    <tag>release/2.0</tag>
+    <tag>default</tag>
     <url>https://bitbucket.org/kazssym/hudson-google-login-plugin/src</url>
   </scm>
   <build>
@@ -61,56 +58,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <links>
             <link>http://hudson-ci.org/javadoc/</link>
             <link>http://stapler.kohsuke.org/apidocs/</link>
           </links>
           <locale>en_US</locale>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.4</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.5</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
         </configuration>
       </plugin>
       <plugin>
@@ -137,7 +90,75 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>ossrh</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.4</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.5</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
   <dependencies>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
     <dependency>
       <groupId>org.hudsonci.plugins</groupId>
       <artifactId>google-api-client-plugin</artifactId>
@@ -149,12 +170,6 @@
       <version>v2-rev83-1.19.0</version>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
   <properties>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <hudsonTags>external, user</hudsonTags>

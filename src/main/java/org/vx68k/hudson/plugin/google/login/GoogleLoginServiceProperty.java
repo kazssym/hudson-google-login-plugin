@@ -1,6 +1,6 @@
 /*
  * GoogleLoginServiceProperty
- * Copyright (C) 2014 Kaz Nishimura
+ * Copyright (C) 2014-2015 Kaz Nishimura
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by the
@@ -20,8 +20,8 @@ package org.vx68k.hudson.plugin.google.login;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.model.UserPropertyDescriptor;
@@ -30,6 +30,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.oauth2.Oauth2Scopes;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -84,13 +85,35 @@ public class GoogleLoginServiceProperty
 
         @Override
         public GoogleLoginServiceProperty newInstance(User user) {
-            Set<String> identifiers = new TreeSet<String>();
-            return new GoogleLoginServiceProperty(identifiers);
+            return new GoogleLoginServiceProperty(new HashSet<String>());
         }
 
         @Override
         public boolean isEnabled() {
             return !getClientID().isEmpty() && !getClientSecret().isEmpty();
+        }
+
+        @Override
+        public GoogleLoginServiceProperty newInstance(StaplerRequest request,
+                JSONObject formData) throws FormException {
+            Set<String> identifiers = new HashSet<String>();
+            Object value = formData.get("identifiers");
+            if (value instanceof JSONArray) {
+                for (Object i : (JSONArray) value) {
+                    JSONObject entry = (JSONObject) i;
+                    identifiers.add(entry.getString(""));
+                }
+            } else {
+                assert value instanceof JSONObject;
+                JSONObject entry = (JSONObject) value;
+                identifiers.add(entry.getString(""));
+            }
+            return new GoogleLoginServiceProperty(identifiers);
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "Google Login";
         }
 
         @Override
@@ -103,11 +126,6 @@ public class GoogleLoginServiceProperty
                 save();
             }
             return ready;
-        }
-
-        @Override
-        public String getDisplayName() {
-            return "Google Login";
         }
     }
 }
