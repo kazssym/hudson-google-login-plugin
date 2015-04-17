@@ -27,7 +27,7 @@
   <artifactId>google-login-plugin</artifactId>
   <packaging>hpi</packaging>
   <name>Google Login Plugin for Hudson</name>
-  <version>3.0-SNAPSHOT</version>
+  <version>4.0-SNAPSHOT</version>
   <description>This plugin implements federated login with Google accounts.</description>
   <url>http://kazssym.bitbucket.org/hudson-google-login-plugin/</url>
   <issueManagement>
