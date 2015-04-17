@@ -21,6 +21,7 @@ package org.vx68k.hudson.plugin.google.login;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import hudson.Extension;
 import hudson.model.Hudson;
 import hudson.model.User;
@@ -45,6 +46,7 @@ import org.kohsuke.stapler.QueryParameter;
 public class GoogleLoginService extends FederatedLoginService {
 
     private static final String URL_NAME = "google";
+    private static final String LOGIN_FROM_NAME = "googleLoginFrom";
 
     protected static String getRedirectUri(String rootUrl) {
         return rootUrl + "federatedLoginService/" + URL_NAME + "/authorized";
@@ -64,10 +66,11 @@ public class GoogleLoginService extends FederatedLoginService {
                 application.getDescriptorByType(
                         GoogleLoginServiceProperty.Descriptor.class);
 
-        String state = request.getSession().getId();
+        HttpSession session = request.getSession();
+        session.removeAttribute(LOGIN_FROM_NAME);
         if (from != null) {
             if (!from.equals(request.getContextPath() + "/login")) {
-                state += ";from=" + from;
+                session.setAttribute(LOGIN_FROM_NAME, from);
             }
         }
 
@@ -76,7 +79,7 @@ public class GoogleLoginService extends FederatedLoginService {
         GoogleAuthorizationCodeRequestUrl url =
                 flow.newAuthorizationUrl();
         url.setRedirectUri(getRedirectUri(application.getRootUrl()));
-        url.setState(state);
+        url.setState(session.getId());
         return HttpResponses.redirectTo(url.build());
     }
 
@@ -91,18 +94,17 @@ public class GoogleLoginService extends FederatedLoginService {
     public HttpResponse doAuthorized(HttpServletRequest request,
             @QueryParameter(required = true) String code,
             @QueryParameter String state) {
-        String from = request.getContextPath() + "/";
+        HttpSession session = request.getSession();
         if (state != null) {
-            String[] sub = state.split("\\s*;\\s*");
-            if (sub.length > 1) {
-                state = sub[0];
-                if (sub[1].startsWith("from=")) {
-                    from = sub[1].substring(sub[1].indexOf('=') + 1);
-                }
-            }
-            if (!state.equals(request.getSession().getId())) {
+            if (!state.equals(session.getId())) {
                 return HttpResponses.forbidden();
             }
+        }
+
+        String from = (String) session.getAttribute(LOGIN_FROM_NAME);
+        session.removeAttribute(LOGIN_FROM_NAME);
+        if (from == null) {
+            from = request.getContextPath() + "/";
         }
 
         Hudson application = Hudson.getInstance();
