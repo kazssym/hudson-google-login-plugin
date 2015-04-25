@@ -8,8 +8,15 @@
   this notice are preserved.  This file is offered as-is, without any warranty.
 -->
 <?jelly escape-by-default="true"?>
-<j:jelly xmlns:j="jelly:core">
-  The Client ID of the web application on the Google Developers Console. The
-  Redirect URI <em>must</em> include
-  <code>${app.rootUrl}/federatedLoginService/google/authorized</code>.
+<j:jelly xmlns="http://www.w3.org/1999/xhtml" xmlns:j="jelly:core">
+  <p>
+    The Client ID created for a web application on the
+    <a href="https://console.developers.google.com/" target="_blank">Google Developers Console</a>.
+    The Redirect URI for the Client ID <em>must</em> include
+    <code>${app.rootUrl}/federatedLoginService/google/authorized</code>.
+  </p>
+  <p>
+    It is also <em>recommended</em> to use a dedicated project to make the
+    consent screen unique. All APIs are <em>optional</em> in the project.
+  </p>
 </j:jelly>
