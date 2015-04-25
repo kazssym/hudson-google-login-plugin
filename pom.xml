@@ -172,6 +172,7 @@
   </dependencies>
   <properties>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+    <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <hudsonTags>external, user</hudsonTags>
   </properties>
 </project>
