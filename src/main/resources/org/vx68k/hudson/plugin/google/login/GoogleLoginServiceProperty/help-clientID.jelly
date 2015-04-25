@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+  Help text for clientID
+  Copyright (C) 2015 Kaz Nishimura
+
+  Copying and distribution of this file, with or without modification, are
+  permitted in any medium without royalty provided the copyright notice and
+  this notice are preserved.  This file is offered as-is, without any warranty.
+-->
+<?jelly escape-by-default="true"?>
+<j:jelly xmlns:j="jelly:core">
+  The Client ID of the web application on the Google Developers Console. The
+  Redirect URI <em>must</em> include
+  <code>${app.rootUrl}/federatedLoginService/google/authorized</code>.
+</j:jelly>
