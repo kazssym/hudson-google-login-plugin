@@ -59,6 +59,15 @@
     <name>Kaz Nishimura</name>
   </organization>
   <build>
+    <resources>
+      <resource>
+        <targetPath>META-INF</targetPath>
+        <directory>.</directory>
+        <includes>
+          <include>COPYING</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -92,6 +101,10 @@
         <artifactId>maven-hpi-plugin</artifactId>
         <!-- Version 3.0.3 should resolve the build problem with Java 7. -->
         <version>3.0.3</version>
+        <configuration>
+          <webResources>
+          </webResources>
+        </configuration>
       </plugin>
     </plugins>
   </build>
