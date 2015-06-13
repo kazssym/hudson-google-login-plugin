@@ -22,13 +22,13 @@
       display: inline-block;
       width: 147px;
       height: 30px;
-      background-image: url("${resURL}/plugin/google-login-plugin/login_20dp.png");
+      background-image: url("${resURL}/plugin/google-login-plugin/images/login_20dp.png");
     }
     .google-login:active {
-      background-image: url("${resURL}/plugin/google-login-plugin/login_active_20dp.png");
+      background-image: url("${resURL}/plugin/google-login-plugin/images/login_active_20dp.png");
     }
     .google-login:hover {
-      background-image: url("${resURL}/plugin/google-login-plugin/login_hover_20dp.png");
+      background-image: url("${resURL}/plugin/google-login-plugin/images/login_hover_20dp.png");
     }
     .google-login > * {
       display: none;

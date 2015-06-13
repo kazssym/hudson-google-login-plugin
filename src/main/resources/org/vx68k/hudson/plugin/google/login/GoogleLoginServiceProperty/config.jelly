@@ -24,13 +24,13 @@
           display: inline-block;
           width: 89px;
           height: 30px;
-          background-image: url("${resURL}/plugin/google-login-plugin/link_20dp.png");
+          background-image: url("${resURL}/plugin/google-login-plugin/images/link_20dp.png");
         }
         .google-login:active {
-          background-image: url("${resURL}/plugin/google-login-plugin/link_active_20dp.png");
+          background-image: url("${resURL}/plugin/google-login-plugin/images/link_active_20dp.png");
         }
         .google-login:hover {
-          background-image: url("${resURL}/plugin/google-login-plugin/link_hover_20dp.png");
+          background-image: url("${resURL}/plugin/google-login-plugin/images/link_hover_20dp.png");
         }
         .google-login > * {
           display: none;
