@@ -92,7 +92,12 @@ public class GoogleLoginService extends FederatedLoginService {
         HttpSession session = request.getSession();
         session.removeAttribute(LOGIN_FROM_NAME);
         if (from != null) {
-            if (!from.equals(request.getContextPath() + "/login")) {
+            String contextPath = request.getContextPath();
+            // Handling a path that is not prefixed by the context path.
+            if (!from.startsWith(contextPath)) {
+                from = contextPath + from;
+            }
+            if (!from.equals(contextPath + "/login")) {
                 session.setAttribute(LOGIN_FROM_NAME, from);
             }
         }
